@@ -10,6 +10,20 @@ body
     overflow: hidden;
 }
 
+@font-face {
+    font-family: "UnifrakturCook";
+    src: url("./font.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+.unifrakturcook-bold {
+    font-family: "UnifrakturCook", cursive;
+    font-weight: 700;
+    font-style: normal;
+  }
+  
 .webgl
 {
     position: fixed;

@@ -45,6 +45,8 @@ async function init() {
   postProcessing.outputNode = outputPass
 
   const imageTexture = await new THREE.TextureLoader().loadAsync(imageUrl)
+  await document.fonts.load('700 48px "UnifrakturCook"')
+  await document.fonts.ready
   imageTexture.colorSpace = THREE.SRGBColorSpace
   imageTexture.wrapS = THREE.ClampToEdgeWrapping
   imageTexture.wrapT = THREE.ClampToEdgeWrapping
