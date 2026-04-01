@@ -32,7 +32,7 @@ async function init() {
   })
   renderer.setSize(sizes.width, sizes.height)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-  renderer.setClearColor('#222')
+  renderer.setClearColor('#000')
 
   const inspector = new Inspector()
   renderer.inspector = inspector
@@ -57,11 +57,11 @@ async function init() {
   const {
     material,
     luminanceExponentUniform,
-    vaporwaveUniform,
+    useTextureColorUniform,
+    showOriginalImageUniform,
     glyphLuminanceJitterUniform,
     glyphTimeOscillationUniform,
     oscTimeScaleUniform,
-    bandThresholdUniforms,
   } = createInstancedGridMaterial(imageTexture, asciiAtlas, charCount)
 
   const rows = 128
@@ -102,14 +102,13 @@ async function init() {
   instancedMesh.position.set(-halfWidth, -halfHeight, 0)
   scene.add(instancedMesh)
 
-  scene.add(new THREE.AxesHelper(3))
   setupInspector(inspector, {
     luminanceExponentUniform,
-    vaporwaveUniform,
+    useTextureColorUniform,
+    showOriginalImageUniform,
     glyphLuminanceJitterUniform,
     glyphTimeOscillationUniform,
     oscTimeScaleUniform,
-    bandThresholdUniforms,
   })
   startLoop({ renderer, postProcessing, controls })
 
