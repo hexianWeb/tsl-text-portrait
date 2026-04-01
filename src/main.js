@@ -5,6 +5,7 @@ import { pass, renderOutput } from 'three/tsl'
 import * as THREE from 'three/webgpu'
 import { setupInspector } from './gui.js'
 import { startLoop } from './loop.js'
+import { createASCIITexture } from './asciiTexture.js'
 import { createInstancedGridMaterial } from './material.js'
 import imageUrl from './image.png'
 
@@ -42,7 +43,6 @@ async function init() {
   const scenePass = pass(scene, camera)
   const outputPass = renderOutput(scenePass)
   postProcessing.outputNode = outputPass
-  // postProcessing.outputNode = sobel(outputPass)
 
   const imageTexture = await new THREE.TextureLoader().loadAsync(imageUrl)
   imageTexture.colorSpace = THREE.SRGBColorSpace
@@ -52,11 +52,20 @@ async function init() {
   imageTexture.magFilter = THREE.LinearFilter
   imageTexture.generateMipmaps = true
 
-  const { material, luminanceExponentUniform, vaporwaveUniform, bandThresholdUniforms } =
-    createInstancedGridMaterial(imageTexture)
+  const { texture: asciiAtlas, charCount } = createASCIITexture()
 
-  const rows = 100
-  const columns = 100
+  const {
+    material,
+    luminanceExponentUniform,
+    vaporwaveUniform,
+    glyphLuminanceJitterUniform,
+    glyphTimeOscillationUniform,
+    oscTimeScaleUniform,
+    bandThresholdUniforms,
+  } = createInstancedGridMaterial(imageTexture, asciiAtlas, charCount)
+
+  const rows = 128
+  const columns = 128
   const count = rows * columns
   const cellSize = 0.1
   const halfWidth = ((rows - 1) * cellSize) / 2
@@ -94,7 +103,14 @@ async function init() {
   scene.add(instancedMesh)
 
   scene.add(new THREE.AxesHelper(3))
-  setupInspector(inspector, { luminanceExponentUniform, vaporwaveUniform, bandThresholdUniforms })
+  setupInspector(inspector, {
+    luminanceExponentUniform,
+    vaporwaveUniform,
+    glyphLuminanceJitterUniform,
+    glyphTimeOscillationUniform,
+    oscTimeScaleUniform,
+    bandThresholdUniforms,
+  })
   startLoop({ renderer, postProcessing, controls })
 
   window.addEventListener('resize', () => {

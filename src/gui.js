@@ -1,5 +1,5 @@
 /**
- * Inspector Parameters: luminance pow exponent, vaporwave toggle, and 9 band boundaries (10 ranges).
+ * Inspector: luminance exponent, vaporwave, glyph luminance jitter (color vs character), 9 band edges.
  *
  * @param {import('three/addons/inspector/Inspector.js').Inspector} inspector
  * @param {object} uniforms
@@ -27,7 +27,14 @@ function clampBandThresholds(u) {
   u.t9.value = Math.min(Math.max(u.t9.value, u.t8.value + THRESH_EPS), max)
 }
 
-export function setupInspector(inspector, { luminanceExponentUniform, vaporwaveUniform, bandThresholdUniforms }) {
+export function setupInspector(inspector, {
+  luminanceExponentUniform,
+  vaporwaveUniform,
+  glyphLuminanceJitterUniform,
+  glyphTimeOscillationUniform,
+  oscTimeScaleUniform,
+  bandThresholdUniforms,
+}) {
   const group = inspector.createParameters('Instanced grid')
   const { t1, t2, t3, t4, t5, t6, t7, t8, t9 } = bandThresholdUniforms
 
@@ -44,6 +51,27 @@ export function setupInspector(inspector, { luminanceExponentUniform, vaporwaveU
     },
     set vaporwaveBands(v) {
       vaporwaveUniform.value = v ? 1 : 0
+    },
+
+    get glyphLuminanceJitter() {
+      return glyphLuminanceJitterUniform.value
+    },
+    set glyphLuminanceJitter(v) {
+      glyphLuminanceJitterUniform.value = v
+    },
+
+    get glyphTimeOscillation() {
+      return glyphTimeOscillationUniform.value
+    },
+    set glyphTimeOscillation(v) {
+      glyphTimeOscillationUniform.value = v
+    },
+
+    get oscTimeScale() {
+      return oscTimeScaleUniform.value
+    },
+    set oscTimeScale(v) {
+      oscTimeScaleUniform.value = v
     },
 
     get bandEdge1() {
@@ -121,6 +149,9 @@ export function setupInspector(inspector, { luminanceExponentUniform, vaporwaveU
 
   group.add(ui, 'luminanceExponent', 0.1, 5, 0.05)
   group.add(ui, 'vaporwaveBands')
+  group.add(ui, 'glyphLuminanceJitter', 0, 0.5, 0.005)
+  group.add(ui, 'glyphTimeOscillation', 0, 0.35, 0.005)
+  group.add(ui, 'oscTimeScale', 0.05, 6, 0.05)
 
   const bandFolder = group.addFolder('Band thresholds (10 ranges)')
   const sliderMax = 1 - THRESH_EPS
