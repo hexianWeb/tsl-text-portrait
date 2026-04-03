@@ -7,7 +7,7 @@ import { setupInspector } from './gui.js'
 import { startLoop } from './loop.js'
 import { createASCIITexture } from './asciiTexture.js'
 import { createInstancedGridMaterial } from './material.js'
-import imageUrl from './image.png'
+import imageUrl from './image3.png'
 
 async function init() {
   const canvas = document.querySelector('canvas.webgl')
@@ -66,8 +66,8 @@ async function init() {
     oscTimeScaleUniform,
   } = createInstancedGridMaterial(imageTexture, asciiAtlas, charCount)
 
-  const rows = 128
-  const columns = 128
+  const rows = 64*2
+  const columns = 64*3
   const count = rows * columns
   const cellSize = 0.1
   const halfWidth = ((rows - 1) * cellSize) / 2
