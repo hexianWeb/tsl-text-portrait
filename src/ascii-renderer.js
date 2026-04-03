@@ -27,8 +27,10 @@ export async function initAsciiRenderer(canvas) {
   const h = canvas.clientHeight || window.innerHeight
   renderer.setSize(w, h)
 
-  // Orthographic camera: 1 unit = 1 pixel, Y-down (matches DOM coordinates).
-  const camera = new THREE.OrthographicCamera(0, w, 0, h, -1, 1)
+  // OrthographicCamera(left, right, top, bottom): must have top > bottom (Y-up).
+  // Viewport world Y runs 0..h (bottom..top). DOM y is top-down, so worldY = h - domY.
+  let viewHeight = h
+  const camera = new THREE.OrthographicCamera(0, w, h, 0, -1, 1)
   camera.position.set(0, 0, 0)
 
   const postProcessing = new THREE.RenderPipeline(renderer)
@@ -81,11 +83,10 @@ export async function initAsciiRenderer(canvas) {
   return {
     sync(rect, angle) {
       const scale = rect.height / MESH_NATIVE_H
-      group.position.set(
-        rect.x + rect.width / 2,
-        rect.y + rect.height / 2,
-        0,
-      )
+      const cx = rect.x + rect.width / 2
+      const cyDom = rect.y + rect.height / 2
+      const cyWorld = viewHeight - cyDom
+      group.position.set(cx, cyWorld, 0)
       group.scale.set(scale, scale, 1)
       group.rotation.z = angle
     },
@@ -97,8 +98,11 @@ export async function initAsciiRenderer(canvas) {
     resize(width, height) {
       renderer.setSize(width, height)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+      viewHeight = height
+      camera.left = 0
       camera.right = width
-      camera.bottom = height
+      camera.top = height
+      camera.bottom = 0
       camera.updateProjectionMatrix()
     },
 
