@@ -9,7 +9,9 @@ export default {
     {
         outDir: '../dist', // Output in the dist/ folder
         emptyOutDir: true, // Empty the folder first
-        sourcemap: true // Add sourcemap
+        sourcemap: true, // Add sourcemap
+        // layout-engine.js uses top-level await for hull preload + WebGPU init
+        target: 'es2022',
     },
     // resolve:
     // {

@@ -1,13 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three.js TSL template</title>
-    <link rel="stylesheet" href="./style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Girl with a Pearl Earring</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
     <canvas class="webgl"></canvas>
+    <main class="page">
+      <p class="hint-pill">
+        Drag the illustration to move it; wheel to scale; short press to rotate. Press D for debug overlay.
+      </p>
+      <div id="stage" class="stage"></div>
+    </main>
     <script type="module" src="./script.js"></script>
-</body>
+  </body>
 </html>

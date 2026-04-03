@@ -23,8 +23,6 @@ export function createASCIITexture(charset = ASCII_CHARSET) {
   canvas.width = n * CELL_PX
   canvas.height = CELL_PX
 
-  canvas.style.zIndex = 10
-  document.body.appendChild(canvas)
   const ctx = canvas.getContext('2d')
   if (!ctx) {
     throw new Error('createASCIITexture: 2D context unavailable')

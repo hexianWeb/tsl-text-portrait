@@ -8,6 +8,8 @@
 
 **Tech Stack:** Three.js r183 (WebGPU + TSL), `@chenglou/pretext`, Vite, JavaScript (全 JS, 无 TS)
 
+**Build:** `vite.config.js` 设置 `build.target: 'es2022'`，以支持 `layout-engine.js` 中的 **top-level await**（字体 / hull 预加载与 ASCII 初始化）。
+
 ---
 
 ## Target File Structure
