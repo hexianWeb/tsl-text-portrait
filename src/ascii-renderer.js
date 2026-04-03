@@ -13,6 +13,7 @@ const MESH_NATIVE_W = GRID_ROWS * CELL_SIZE
 
 /**
  * Initialize the ASCII art renderer on the given canvas.
+ * Call {@link startRenderLoop} after the first layout frame so sync runs once first.
  * @param {HTMLCanvasElement} canvas
  */
 export async function initAsciiRenderer(canvas) {
@@ -28,10 +29,22 @@ export async function initAsciiRenderer(canvas) {
   renderer.setSize(w, h)
 
   // OrthographicCamera(left, right, top, bottom): must have top > bottom (Y-up).
-  // Viewport world Y runs 0..h (bottom..top). DOM y is top-down, so worldY = h - domY.
+  // Match logical size from renderer (same as setSize) so pixels stay square with DPR.
   let viewHeight = h
   const camera = new THREE.OrthographicCamera(0, w, h, 0, -1, 1)
   camera.position.set(0, 0, 0)
+
+  const sizeScratch = new THREE.Vector2()
+  function updateCameraFromRendererSize() {
+    renderer.getSize(sizeScratch)
+    viewHeight = sizeScratch.y
+    camera.left = 0
+    camera.right = sizeScratch.x
+    camera.top = sizeScratch.y
+    camera.bottom = 0
+    camera.updateProjectionMatrix()
+  }
+  updateCameraFromRendererSize()
 
   const postProcessing = new THREE.RenderPipeline(renderer)
   postProcessing.outputColorTransform = false
@@ -80,8 +93,16 @@ export async function initAsciiRenderer(canvas) {
   group.add(mesh)
   scene.add(group)
 
+  /** Independent render clock: TSL `time` advances even when layout RAF is idle. */
+  function startRenderLoop() {
+    renderer.setAnimationLoop(() => {
+      postProcessing.render()
+    })
+  }
+
   return {
     sync(rect, angle) {
+      // Same height-driven uniform scale as layout pearlRect (672:1024); camera uses renderer logical size so cells stay square with DPR.
       const scale = rect.height / MESH_NATIVE_H
       const cx = rect.x + rect.width / 2
       const cyDom = rect.y + rect.height / 2
@@ -91,22 +112,16 @@ export async function initAsciiRenderer(canvas) {
       group.rotation.z = angle
     },
 
-    render() {
-      postProcessing.render()
-    },
+    startRenderLoop,
 
     resize(width, height) {
       renderer.setSize(width, height)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-      viewHeight = height
-      camera.left = 0
-      camera.right = width
-      camera.top = height
-      camera.bottom = 0
-      camera.updateProjectionMatrix()
+      updateCameraFromRendererSize()
     },
 
     dispose() {
+      renderer.setAnimationLoop(null)
       renderer.dispose()
       geometry.dispose()
       material.dispose()

@@ -774,7 +774,6 @@ function commitFrame(now) {
     pearlDragSession !== null ? 'grabbing' : hoveredLogo === null ? '' : 'pointer'
 
   asciiRenderer.sync(layout.pearlRect, logoAnimations.pearl.angle)
-  asciiRenderer.render()
 
   return animating
 }
@@ -917,3 +916,4 @@ document.addEventListener(
 
 mountStaticNodes()
 commitFrame(performance.now())
+asciiRenderer.startRenderLoop()
