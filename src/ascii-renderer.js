@@ -109,7 +109,8 @@ export async function initAsciiRenderer(canvas) {
       const cyWorld = viewHeight - cyDom
       group.position.set(cx, cyWorld, 0)
       group.scale.set(scale, scale, 1)
-      group.rotation.z = angle
+      // CSS rotate() is clockwise for positive angles; Three.js rotation.z is CCW in XY — negate to match SVG + pretext hull.
+      group.rotation.z = -angle
     },
 
     startRenderLoop,
