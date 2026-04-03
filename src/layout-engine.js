@@ -31,15 +31,15 @@ import {
 } from './wrap-geometry.js'
 import { initAsciiRenderer } from './ascii-renderer.js'
 
-const BODY_FONT = '20px "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif'
-const BODY_LINE_HEIGHT = 32
+const BODY_FONT = '16px "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif'
+const BODY_LINE_HEIGHT = 28
 const CREDIT_TEXT = 'Classical portrait · Curatorial note'
 const CREDIT_FONT = '12px "Helvetica Neue", Helvetica, Arial, sans-serif'
 const CREDIT_LINE_HEIGHT = 16
-const HEADLINE_TEXT = 'Girl with a Pearl Earring Girl with a Pearl Earring'
+const HEADLINE_TEXT = 'Girl with a Pearl Earring'
 const HEADLINE_FONT_FAMILY = '"Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif'
-const HINT_PILL_SAFE_TOP = 72
-const NARROW_BREAKPOINT = 760
+const HINT_PILL_SAFE_TOP = 36
+const NARROW_BREAKPOINT = 380
 const NARROW_COLUMN_MAX_WIDTH = 430
 /** Fraction of viewport width reserved on each side; text + hero live in the middle band. */
 const LAYOUT_SIDE_INSET = 0.10
@@ -49,8 +49,13 @@ const IMAGE_ASPECT = 672 / 1024
 
 /** Extra scale on top of responsive `pearlRect` (wheel while hovering the illustration). */
 let pearlUserScale = 1
-const PEARL_USER_SCALE_MIN = 0.2
-const PEARL_USER_SCALE_MAX = 5
+/** Wheel sets this; `pearlUserScale` eases toward it (see `updatePearlScaleSmooth`). */
+let pearlScaleTarget = 1
+let scaleSmoothLastTime = null
+/** Higher = snappier zoom ease (exponential decay toward target). */
+const PEARL_SCALE_SMOOTH_LAMBDA = 14
+const PEARL_USER_SCALE_MIN = 0.5
+const PEARL_USER_SCALE_MAX = 2
 
 /** Pixel offset from the auto layout position (pointer drag). */
 let pearlDragOffset = { x: 0, y: 0 }
@@ -479,6 +484,24 @@ function updateSpinState(now) {
   return updateLogoSpin(logoAnimations.pearl, now)
 }
 
+/** Frame-rate independent ease: `pearlUserScale` → `pearlScaleTarget`. */
+function updatePearlScaleSmooth(now) {
+  const diff = pearlScaleTarget - pearlUserScale
+  if (Math.abs(diff) < 1e-5) {
+    pearlUserScale = pearlScaleTarget
+    scaleSmoothLastTime = null
+    return false
+  }
+  const dt =
+    scaleSmoothLastTime === null
+      ? 1 / 60
+      : Math.min(0.1, (now - scaleSmoothLastTime) / 1000)
+  scaleSmoothLastTime = now
+  const t = 1 - Math.exp(-PEARL_SCALE_SMOOTH_LAMBDA * dt)
+  pearlUserScale += diff * t
+  return true
+}
+
 function startLogoSpin(kind, direction, now) {
   const logo = getLogoAnimation(kind)
   const delta = direction * Math.PI
@@ -496,7 +519,7 @@ function getLogoProjection(layout, lineHeight) {
     pearlObstacle: {
       kind: 'polygon',
       points: pearlWrap,
-      horizontalPadding: Math.round(lineHeight * -4),
+      horizontalPadding: Math.round(lineHeight * -0.75),
       verticalPadding: Math.round(lineHeight * 0.15),
     },
     hits: {
@@ -736,7 +759,9 @@ function commitFrame(now) {
   const root = document.documentElement
   const pageWidth = root.clientWidth
   const pageHeight = root.clientHeight
-  const animating = updateSpinState(now)
+  const animatingSpin = updateSpinState(now)
+  const animatingScale = updatePearlScaleSmooth(now)
+  const animating = animatingSpin || animatingScale
   const layout = translatePearlRect(
     scalePearlRect(buildLayout(pageWidth, pageHeight, lineHeight), pearlUserScale),
     pearlDragOffset.x,
@@ -908,7 +933,7 @@ document.addEventListener(
     if (!isPointInPolygon(currentLogoHits.pearl, event.clientX, event.clientY)) return
     event.preventDefault()
     const factor = Math.exp(-event.deltaY * 0.0015)
-    pearlUserScale = clamp(pearlUserScale * factor, PEARL_USER_SCALE_MIN, PEARL_USER_SCALE_MAX)
+    pearlScaleTarget = clamp(pearlScaleTarget * factor, PEARL_USER_SCALE_MIN, PEARL_USER_SCALE_MAX)
     scheduleRender()
   },
   { passive: false },
