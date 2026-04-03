@@ -30,6 +30,7 @@ async function init() {
     canvas,
     forceWebGL: false,
   })
+  await renderer.init()
   renderer.setSize(sizes.width, sizes.height)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1))
   renderer.setClearColor('#000')

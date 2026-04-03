@@ -17,6 +17,7 @@ const MESH_NATIVE_W = GRID_ROWS * CELL_SIZE
  */
 export async function initAsciiRenderer(canvas) {
   const renderer = new THREE.WebGPURenderer({ canvas, forceWebGL: false })
+  await renderer.init()
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.setClearColor('#000000', 1)
 
