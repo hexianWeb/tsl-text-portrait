@@ -31,7 +31,7 @@ async function init() {
     forceWebGL: false,
   })
   renderer.setSize(sizes.width, sizes.height)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1))
   renderer.setClearColor('#000')
 
   const inspector = new Inspector()
@@ -122,7 +122,7 @@ async function init() {
     camera.updateProjectionMatrix()
 
     renderer.setSize(sizes.width, sizes.height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1))
   })
 }
 
