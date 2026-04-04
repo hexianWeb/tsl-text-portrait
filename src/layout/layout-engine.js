@@ -31,13 +31,14 @@ import {
 } from './wrap-geometry.js'
 import { initAsciiRenderer } from '../render/ascii-renderer.js'
 
-const BODY_FONT = '16px "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif'
+const BODY_FONT = '16px "IM Fell English", serif'
 const BODY_LINE_HEIGHT = 28
 const CREDIT_TEXT = 'Classical portrait · Curatorial note'
-const CREDIT_FONT = '12px "Helvetica Neue", Helvetica, Arial, sans-serif'
+const CREDIT_FONT = 'italic 12px "EB Garamond", serif'
 const CREDIT_LINE_HEIGHT = 16
-const HEADLINE_TEXT = 'Girl with a Pearl Earring'
-const HEADLINE_FONT_FAMILY = '"Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif'
+/** Uppercase so pretext metrics match rendered glyphs (IM Fell English SC). */
+const HEADLINE_TEXT = 'GIRL WITH A PEARL EARRING'
+const HEADLINE_FONT_FAMILY = '"IM Fell English SC", serif'
 const HINT_PILL_SAFE_TOP = 36
 const NARROW_BREAKPOINT = 380
 const NARROW_COLUMN_MAX_WIDTH = 430
@@ -442,7 +443,7 @@ function fitHeadlineFontSize(headlineWidth, pageWidth) {
 
   while (low <= high) {
     const size = Math.floor((low + high) / 2)
-    const font = `700 ${size}px ${HEADLINE_FONT_FAMILY}`
+    const font = `400 ${size}px ${HEADLINE_FONT_FAMILY}`
     const headlinePrepared = getPrepared(HEADLINE_TEXT, font)
     if (!headlineBreaksInsideWord(headlinePrepared, headlineWidth)) {
       best = size
@@ -541,7 +542,7 @@ function buildLayout(pageWidth, pageHeight, lineHeight) {
     const headlineWidth = contentWidth - gutter * 2
     const headlineFontSize = Math.min(48, fitHeadlineFontSize(headlineWidth, pageWidth))
     const headlineLineHeight = Math.round(headlineFontSize * 0.92)
-    const headlineFont = `700 ${headlineFontSize}px ${HEADLINE_FONT_FAMILY}`
+    const headlineFont = `400 ${headlineFontSize}px ${HEADLINE_FONT_FAMILY}`
     const creditGap = Math.round(Math.max(12, lineHeight * 0.5))
     const copyGap = Math.round(Math.max(18, lineHeight * 0.7))
     const pearlHeight = Math.round(Math.min(92, contentWidth * 0.23, pageHeight * 0.11))
@@ -585,7 +586,7 @@ function buildLayout(pageWidth, pageHeight, lineHeight) {
   const headlineWidth = Math.round(Math.min(contentWidth - gutter * 2, Math.max(columnWidth, contentWidth * 0.5)))
   const headlineFontSize = fitHeadlineFontSize(headlineWidth, pageWidth)
   const headlineLineHeight = Math.round(headlineFontSize * 0.92)
-  const headlineFont = `700 ${headlineFontSize}px ${HEADLINE_FONT_FAMILY}`
+  const headlineFont = `400 ${headlineFontSize}px ${HEADLINE_FONT_FAMILY}`
   const creditGap = Math.round(Math.max(14, lineHeight * 0.6))
   const copyGap = Math.round(Math.max(20, lineHeight * 0.9))
   // Wide: large right-side illustration inside the content band; may extend past viewport top/bottom by design
