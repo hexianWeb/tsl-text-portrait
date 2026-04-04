@@ -153,6 +153,14 @@ body {
   color: var(--accent);
 }
 
+.line__cite {
+  font-size: 0.85em;
+  background-color: rgba(255, 235, 120, 0.92);
+  box-decoration-break: clone;
+  padding: 0 0.06em;
+  border-radius: 0.12em;
+}
+
 @media (max-width: 760px) {
   .credit {
     font-size: 11px;

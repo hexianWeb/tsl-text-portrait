@@ -396,6 +396,33 @@ function textProjectionEqual(a, b) {
     projectedBodyLinesEqual(a.bodyLines, b.bodyLines)
 }
 
+/**
+ * Wikipedia-style numeric refs only, e.g. [17] or [21][22]. Excludes [nl], etc.
+ * Use a fresh RegExp per operation so split/match do not share lastIndex.
+ */
+const CITE_NUMERIC_SPLIT = /\[\d+\]/g
+
+/**
+ * Fills `element` with text nodes and `.line__cite` spans for each [n] match.
+ * @param {HTMLElement} element
+ * @param {string} text
+ */
+function setBodyLineContentWithCitations(element, text) {
+  const parts = text.split(CITE_NUMERIC_SPLIT)
+  const matches = text.match(/\[\d+\]/g) ?? []
+  const nodes = []
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i]) nodes.push(document.createTextNode(parts[i]))
+    if (i < matches.length) {
+      const cite = document.createElement('span')
+      cite.className = 'line__cite'
+      cite.textContent = matches[i]
+      nodes.push(cite)
+    }
+  }
+  element.replaceChildren(...nodes)
+}
+
 function projectTextProjection(projection) {
   domCache.headline.style.left = '0px'
   domCache.headline.style.top = '0px'
@@ -422,7 +449,7 @@ function projectTextProjection(projection) {
     const line = projection.bodyLines[index]
     const element = domCache.bodyLines[index]
     element.className = line.className
-    element.textContent = line.text
+    setBodyLineContentWithCitations(element, line.text)
     element.style.left = `${line.x}px`
     element.style.top = `${line.y}px`
     element.style.font = projection.bodyFont
