@@ -12,6 +12,9 @@
   --ink: #e8e0d4;
   --muted: #a09888;
   --accent: #d97757;
+  /* Diagonal cross grid on .page::before (dark theme, low contrast) */
+  --grid-line: rgba(232, 224, 212, 0.1);
+  --grid-tile: 40px;
 }
 
 * {
@@ -53,6 +56,45 @@ body {
   z-index: 1;
 }
 
+/* Right-faded diagonal cross grid (canvas shows through; no pointer capture) */
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 49%,
+      var(--grid-line) 49%,
+      var(--grid-line) 51%,
+      transparent 51%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 49%,
+      var(--grid-line) 49%,
+      var(--grid-line) 51%,
+      transparent 51%
+    );
+  background-size: var(--grid-tile) var(--grid-tile);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 50%,
+    transparent 50%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 50%,
+    transparent 50%,
+    transparent 100%
+  );
+}
+
 .page--mobile {
   min-height: 100svh;
   height: 100svh;
@@ -84,7 +126,49 @@ body {
   user-select: none;
   pointer-events: none;
   z-index: 5;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.3);
+  /* box-shadow: 0 14px 32px rgba(0, 0, 0, 0.3); */
+  box-shadow: 0 3px 30px rgb(203 203 203 / 31%);
+}
+
+/* Decorative fake controls — top-left; accent glow on hover/focus (design: 2026-04-04) */
+.fake-toolbar {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 6;
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.fake-toolbar__btn {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid rgba(232, 224, 212, 0.35);
+  border-radius: 2px;
+  background: rgba(232, 224, 212, 0.06);
+  color: var(--ink);
+  font: 600 11px/1 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 80ms ease;
+}
+
+.fake-toolbar__btn:hover,
+.fake-toolbar__btn:focus-visible {
+  outline: none;
+  border-color: rgba(232, 224, 212, 0.55);
+  box-shadow: 0 0 12px rgba(217, 119, 87, 0.45);
+}
+
+.fake-toolbar__btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 0 8px rgba(217, 119, 87, 0.3);
 }
 
 /* Fixed strip: separator + copyright (above canvas, below hint pill) */
@@ -111,6 +195,7 @@ body {
 
 .stage {
   position: relative;
+  z-index: 1;
   height: 100%;
 }
 
