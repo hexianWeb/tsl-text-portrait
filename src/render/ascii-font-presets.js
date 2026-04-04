@@ -12,6 +12,12 @@ export const ASCII_FONT_PRESETS = [
     label: 'UnifrakturCook (default)',
     fontCss: 'bold 60px "UnifrakturCook", cursive',
   },
+  /** Loaded via Google Fonts in `index.html` (`family=IM+Fell+English`). */
+  {
+    id: 'im-fell-english',
+    label: 'IM Fell English',
+    fontCss: '400 60px "IM Fell English", serif',
+  },
 ]
 
 /**

@@ -76,7 +76,10 @@ export async function initAsciiRenderer(canvas) {
   postProcessing.outputNode = renderOutput(scenePass)
 
   const imageTexture = await new THREE.TextureLoader().loadAsync(imageUrl)
-  await document.fonts.load('700 48px "UnifrakturCook"')
+  await Promise.all([
+    document.fonts.load('700 48px "UnifrakturCook"'),
+    document.fonts.load('400 48px "IM Fell English"'),
+  ])
   await document.fonts.ready
 
   imageTexture.colorSpace = THREE.SRGBColorSpace
