@@ -1,13 +1,13 @@
+// Secondary entry: not loaded by index.html. To run this demo, set script src to ./app/main.js
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { Inspector } from 'three/addons/inspector/Inspector.js'
-// import { sobel } from 'three/addons/tsl/display/SobelOperatorNode.js'
 import { pass, renderOutput } from 'three/tsl'
 import * as THREE from 'three/webgpu'
 import { setupInspector } from './gui.js'
 import { startLoop } from './loop.js'
-import { createASCIITexture } from './asciiTexture.js'
-import { createInstancedGridMaterial } from './material.js'
-import imageUrl from './image3.png'
+import { createASCIITexture } from '../render/asciiTexture.js'
+import { createInstancedGridMaterial } from '../render/material.js'
+import imageUrl from '../assets/image.png'
 
 async function init() {
   const canvas = document.querySelector('canvas.webgl')

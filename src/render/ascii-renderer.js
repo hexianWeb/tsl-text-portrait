@@ -2,7 +2,7 @@ import * as THREE from 'three/webgpu'
 import { pass, renderOutput } from 'three/tsl'
 import { createASCIITexture } from './asciiTexture.js'
 import { createInstancedGridMaterial } from './material.js'
-import imageUrl from './image.png'
+import imageUrl from '../assets/image.png'
 
 const IMAGE_ASPECT = 672 / 1024
 const GRID_COLS = 192

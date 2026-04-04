@@ -20,7 +20,7 @@ Pearl Maiden showcase — demonstrates layout APIs:
 */
 import { layoutNextLine, prepareWithSegments, walkLineRanges } from '@chenglou/pretext'
 import { BODY_COPY } from './layout-text.js'
-import pearlMaidenArtUrl from './symbol2.svg'
+import pearlMaidenArtUrl from '../assets/symbol2.svg'
 import {
   carveTextLineSlots,
   getPolygonIntervalForBand,
@@ -29,7 +29,7 @@ import {
   isPointInPolygon,
   transformWrapPoints,
 } from './wrap-geometry.js'
-import { initAsciiRenderer } from './ascii-renderer.js'
+import { initAsciiRenderer } from '../render/ascii-renderer.js'
 
 const BODY_FONT = '16px "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif'
 const BODY_LINE_HEIGHT = 28
