@@ -12,17 +12,32 @@
 
 ---
 
-### Task 1: 建立目錄並搬移 `assets`
+### Task 1: 搬移 `assets` 並修正仍在 `src/` 根下的 import
 
 **Files:**
 
-- Create: `src/assets/`（空目錄透過移入檔案形成）
 - Move: `src/image.png` → `src/assets/image.png`
 - Move: `src/symbol2.svg` → `src/assets/symbol2.svg`
+- Modify: `src/ascii-renderer.js`（搬進 `render/` 前先改路徑，避免中途壞 build）
+- Modify: `src/layout-engine.js`（同上）
 
-**Step 1:** 在檔案總管或 `git mv` 將兩個檔案移到 `src/assets/`（保留 git 歷史建議用 `git mv`）。
+**Step 1:** `git mv` 兩個媒體檔到 `src/assets/`。
 
-**Step 2:** 暫勿提交；下一 task 會一併修正引用後再驗證。
+**Step 2: 更新仍在根目錄的 `src/ascii-renderer.js`**
+
+```javascript
+import imageUrl from './assets/image.png'
+```
+
+**Step 3: 更新仍在根目錄的 `src/layout-engine.js`**
+
+```javascript
+import pearlMaidenArtUrl from './assets/symbol2.svg'
+```
+
+（此時 `ascii-renderer` 仍指向 `./asciiTexture.js` 等，勿改。）
+
+**Step 4:** 執行 `pnpm build` 確認通過後再進入 Task 2。
 
 ---
 
@@ -36,15 +51,15 @@
 
 **Step 1: 更新 `src/render/ascii-renderer.js` 內 import**
 
-將圖片路徑改為指向 assets：
+圖片改為自 `render/` 出發：
 
 ```javascript
 import imageUrl from '../assets/image.png'
 ```
 
-其餘同目錄之 `asciiTexture.js`、`material.js` 的相對路徑若仍為 `./` 則可保持。
+`asciiTexture.js`、`material.js` 若僅 `three` 與互相 `./` 引用，可維持不變。
 
-**Step 2:** 保存檔案。
+**Step 2:** `pnpm build` 應仍通過。
 
 ---
 
@@ -63,7 +78,7 @@ import imageUrl from '../assets/image.png'
 - `wrap-geometry`：`./wrap-geometry.js`（不變）
 - `ascii-renderer`：`import { initAsciiRenderer } from '../render/ascii-renderer.js'`
 
-**Step 2:** 保存檔案。
+**Step 2:** `pnpm build` 確認通過。
 
 ---
 
