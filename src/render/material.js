@@ -21,6 +21,8 @@ import {
   uniformTexture,
 } from 'three/tsl'
 
+import { mapPearlScaleToLuminanceExponent } from '../layout/config.js'
+
 /**
  * Instanced grid: `aUv` samples the photo; `uv` maps each cell quad into one glyph in `asciiAtlas`.
  * Glyph tint can switch between grayscale and original texture color.
@@ -37,8 +39,8 @@ export function createInstancedGridMaterial(map, asciiAtlas, charCount) {
     side: THREE.DoubleSide,
   })
 
-  /** Contrast on luminance: pow(l, exponent). Typical 2.2 for display-like separation. */
-  const luminanceExponentUniform = uniform(0.65)
+  /** Contrast on luminance: pow(l, exponent). Default matches pearl scale 1 when layout drives the uniform. */
+  const luminanceExponentUniform = uniform(mapPearlScaleToLuminanceExponent(1))
   const useTextureColorUniform = uniform(1)
   const showOriginalImageUniform = uniform(0)
   /** Spatial: remapClamp(hash,0,1,-1,1) * this, added to lCurve for glyph pick. */

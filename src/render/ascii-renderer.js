@@ -225,7 +225,15 @@ export async function initAsciiRenderer(canvas) {
   }
 
   return {
-    sync(rect, angle) {
+    /**
+     * @param {{ x: number, y: number, width: number, height: number }} rect
+     * @param {number} angle
+     * @param {number} [luminanceExponent] - If set, updates `luminanceExponentUniform` (e.g. from pearl wheel scale).
+     */
+    sync(rect, angle, luminanceExponent) {
+      if (luminanceExponent !== undefined) {
+        luminanceExponentUniform.value = luminanceExponent
+      }
       const scale = rect.height / meshNativeH
       const cx = rect.x + rect.width / 2
       const cyDom = rect.y + rect.height / 2

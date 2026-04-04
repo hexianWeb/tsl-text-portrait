@@ -5,16 +5,22 @@ import { ASCII_FONT_PRESETS } from '../render/ascii-font-presets.js'
  *
  * @param {import('three/addons/inspector/Inspector.js').Inspector} inspector
  * @param {object} uniforms
+ * @param {{ includeLuminanceExponent?: boolean }} [options] - Layout page drives exponent from pearl scale; set false to hide slider.
  */
 
-export function setupInspector(inspector, {
-  luminanceExponentUniform,
-  useTextureColorUniform,
-  showOriginalImageUniform,
-  glyphLuminanceJitterUniform,
-  glyphTimeOscillationUniform,
-  oscTimeScaleUniform,
-}) {
+export function setupInspector(
+  inspector,
+  {
+    luminanceExponentUniform,
+    useTextureColorUniform,
+    showOriginalImageUniform,
+    glyphLuminanceJitterUniform,
+    glyphTimeOscillationUniform,
+    oscTimeScaleUniform,
+  },
+  options = {},
+) {
+  const { includeLuminanceExponent = true } = options
   const group = inspector.createParameters('Instanced grid')
 
   const ui = {
@@ -61,7 +67,9 @@ export function setupInspector(inspector, {
     },
   }
 
-  group.add(ui, 'luminanceExponent', 0.1, 5, 0.05)
+  if (includeLuminanceExponent) {
+    group.add(ui, 'luminanceExponent', 0.1, 3, 0.05)
+  }
   group.add(ui, 'useTextureColor')
   group.add(ui, 'showOriginalImage')
   group.add(ui, 'glyphLuminanceJitter', 0, 0.5, 0.005)
@@ -82,15 +90,19 @@ export function setupAsciiLayoutInspector(inspector, api) {
   atlasGroup.add(api, 'fontPresetLabel', presetLabels)
 
   const gridGroup = inspector.createParameters('Grid')
-  gridGroup.add(api, 'gridCols', 8, 512, 1)
+  gridGroup.add(api, 'gridCols', 2, 192, 1)
   gridGroup.add(api, 'cellSize', 0.02, 0.5, 0.005)
 
-  setupInspector(inspector, {
-    luminanceExponentUniform: api.luminanceExponentUniform,
-    useTextureColorUniform: api.useTextureColorUniform,
-    showOriginalImageUniform: api.showOriginalImageUniform,
-    glyphLuminanceJitterUniform: api.glyphLuminanceJitterUniform,
-    glyphTimeOscillationUniform: api.glyphTimeOscillationUniform,
-    oscTimeScaleUniform: api.oscTimeScaleUniform,
-  })
+  setupInspector(
+    inspector,
+    {
+      luminanceExponentUniform: api.luminanceExponentUniform,
+      useTextureColorUniform: api.useTextureColorUniform,
+      showOriginalImageUniform: api.showOriginalImageUniform,
+      glyphLuminanceJitterUniform: api.glyphLuminanceJitterUniform,
+      glyphTimeOscillationUniform: api.glyphTimeOscillationUniform,
+      oscTimeScaleUniform: api.oscTimeScaleUniform,
+    },
+    { includeLuminanceExponent: false },
+  )
 }

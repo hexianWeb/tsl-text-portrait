@@ -49,6 +49,26 @@ export const PEARL_USER_SCALE_MIN = 0.5
 export const PEARL_USER_SCALE_MAX = 2
 
 /**
+ * ASCII luminance exponent range when driven by {@link PEARL_USER_SCALE_MIN}…{@link PEARL_USER_SCALE_MAX}.
+ * Larger pearl scale → higher exponent (sharper glyph ramp). See {@link mapPearlScaleToLuminanceExponent}.
+ */
+export const PEARL_LUMINANCE_EXPONENT_MIN = 0.1
+export const PEARL_LUMINANCE_EXPONENT_MAX = 0.65
+
+/**
+ * Linear map: pearl wheel scale [min,max] → luminance exponent [min,max].
+ * @param {number} scale - Smoothed `pearlUserScale` (typically clamped to user range).
+ */
+export function mapPearlScaleToLuminanceExponent(scale) {
+  const lo = PEARL_USER_SCALE_MIN
+  const hi = PEARL_USER_SCALE_MAX
+  const t = Math.min(1, Math.max(0, (scale - lo) / (hi - lo)))
+  return (
+    PEARL_LUMINANCE_EXPONENT_MIN + t * (PEARL_LUMINANCE_EXPONENT_MAX - PEARL_LUMINANCE_EXPONENT_MIN)
+  )
+}
+
+/**
  * 拖曳插圖時，移動超過此像素數才視為拖曳；否則放開可當作「點擊旋轉」。
  */
 export const LOGO_DRAG_CLICK_THRESHOLD_PX = 8
