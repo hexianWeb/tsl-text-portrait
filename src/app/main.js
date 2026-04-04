@@ -30,13 +30,13 @@ async function init() {
     canvas,
     forceWebGL: false,
   })
+  const inspector = new Inspector()
+  renderer.inspector = inspector
+
   await renderer.init()
   renderer.setSize(sizes.width, sizes.height)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1))
   renderer.setClearColor('#000')
-
-  const inspector = new Inspector()
-  renderer.inspector = inspector
 
   const postProcessing = new THREE.RenderPipeline(renderer)
   postProcessing.outputColorTransform = false

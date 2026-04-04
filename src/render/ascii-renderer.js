@@ -39,6 +39,10 @@ function clampGridCols(cols) {
  */
 export async function initAsciiRenderer(canvas) {
   const renderer = new THREE.WebGPURenderer({ canvas, forceWebGL: false })
+  // Must assign before `init()` so `Renderer` calls `Inspector.init()`, which appends the profiler UI to `canvas.parentElement`.
+  const inspector = new Inspector()
+  renderer.inspector = inspector
+
   await renderer.init()
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   renderer.setClearColor('#000000', 1)
@@ -172,9 +176,6 @@ export async function initAsciiRenderer(canvas) {
     currentAsciiTexture.needsUpdate = true
     material.needsUpdate = true
   }
-
-  const inspector = new Inspector()
-  renderer.inspector = inspector
 
   const asciiLayoutApi = {
     get fontPresetLabel() {
