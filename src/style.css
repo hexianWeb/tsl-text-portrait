@@ -87,6 +87,28 @@ body {
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.3);
 }
 
+/* Fixed strip: separator + copyright (above canvas, below hint pill) */
+.site-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  margin: 0;
+  padding: 10px 16px 14px;
+  border-top: 1px solid rgba(160, 152, 136, 0.55);
+  background: transparent;
+  text-align: center;
+}
+
+.site-footer__copyright {
+  margin: 0;
+  font: 400 12px/1.35 "IM Fell English", serif;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  user-select: text;
+}
+
 .stage {
   position: relative;
   height: 100%;
@@ -155,7 +177,8 @@ body {
 
 .line__cite {
   font-size: 0.85em;
-  background-color: rgba(255, 235, 120, 0.92);
+  color: rgba(255, 235, 120 );
+  background-color: rgba(255, 235, 120, 0.1);
   box-decoration-break: clone;
   padding: 0 0.06em;
   border-radius: 0.12em;
@@ -165,6 +188,10 @@ body {
   .credit {
     font-size: 11px;
     letter-spacing: 0.015em;
+  }
+
+  .site-footer {
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
   }
 }
 
