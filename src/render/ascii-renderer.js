@@ -1,15 +1,36 @@
 import * as THREE from 'three/webgpu'
+import { Inspector } from 'three/addons/inspector/Inspector.js'
 import { pass, renderOutput } from 'three/tsl'
-import { createASCIITexture } from './asciiTexture.js'
+import { createASCIITexture, ASCII_CHARSET } from './asciiTexture.js'
 import { createInstancedGridMaterial } from './material.js'
+import { getPresetById, ASCII_FONT_PRESETS } from './ascii-font-presets.js'
+import { setupAsciiLayoutInspector } from '../app/gui.js'
 import imageUrl from '../assets/image.png'
 
 const IMAGE_ASPECT = 672 / 1024
-const GRID_COLS = 192
-const GRID_ROWS = Math.round(GRID_COLS * IMAGE_ASPECT)
-const CELL_SIZE = 0.1
-const MESH_NATIVE_H = GRID_COLS * CELL_SIZE
-const MESH_NATIVE_W = GRID_ROWS * CELL_SIZE
+/** Avoid freezing the tab when grid resolution is set too high. */
+const MAX_GRID_INSTANCES = 400_000
+
+/**
+ * @param {number} cols
+ * @returns {number}
+ */
+function clampGridCols(cols) {
+  let c = Math.max(4, Math.round(Number(cols)))
+  let rows = Math.max(1, Math.round(c * IMAGE_ASPECT))
+  let count = c * rows
+  while (count > MAX_GRID_INSTANCES && c > 4) {
+    c--
+    rows = Math.max(1, Math.round(c * IMAGE_ASPECT))
+    count = c * rows
+  }
+  if (count > MAX_GRID_INSTANCES) {
+    console.warn(
+      `initAsciiRenderer: grid capped at ${MAX_GRID_INSTANCES} instances (cols=${c}, rows=${rows})`,
+    )
+  }
+  return c
+}
 
 /**
  * Initialize the ASCII art renderer on the given canvas.
@@ -29,7 +50,6 @@ export async function initAsciiRenderer(canvas) {
   renderer.setSize(w, h)
 
   // OrthographicCamera(left, right, top, bottom): must have top > bottom (Y-up).
-  // Match logical size from renderer (same as setSize) so pixels stay square with DPR.
   let viewHeight = h
   const camera = new THREE.OrthographicCamera(0, w, h, 0, -1, 1)
   camera.position.set(0, 0, 0)
@@ -62,36 +82,136 @@ export async function initAsciiRenderer(canvas) {
   imageTexture.magFilter = THREE.LinearFilter
   imageTexture.generateMipmaps = true
 
-  const { texture: asciiAtlas, charCount } = createASCIITexture()
+  const initialPreset = getPresetById(ASCII_FONT_PRESETS[0].id)
+  const { texture: asciiAtlas, charCount } = createASCIITexture(ASCII_CHARSET, {
+    fontCss: initialPreset.fontCss,
+  })
 
-  const { material } = createInstancedGridMaterial(imageTexture, asciiAtlas, charCount)
+  const {
+    material,
+    asciiAtlasNode,
+    charCountUniform,
+    luminanceExponentUniform,
+    useTextureColorUniform,
+    showOriginalImageUniform,
+    glyphLuminanceJitterUniform,
+    glyphTimeOscillationUniform,
+    oscTimeScaleUniform,
+  } = createInstancedGridMaterial(imageTexture, asciiAtlas, charCount)
 
-  const count = GRID_ROWS * GRID_COLS
-  const geometry = new THREE.PlaneGeometry(CELL_SIZE, CELL_SIZE, 1, 1)
-  const aUvArray = new Float32Array(count * 2)
-  const mesh = new THREE.InstancedMesh(geometry, material, count)
+  const group = new THREE.Group()
+  scene.add(group)
+
+  let gridCols = 192
+  let cellSize = 0.1
+  let gridRows = Math.max(1, Math.round(gridCols * IMAGE_ASPECT))
+  let meshNativeH = gridCols * cellSize
+  let meshNativeW = gridRows * cellSize
+
+  let instancedMesh = null
 
   const mat4 = new THREE.Matrix4()
   const pos = new THREE.Vector3()
 
-  for (let i = 0; i < GRID_ROWS; i++) {
-    for (let j = 0; j < GRID_COLS; j++) {
-      const idx = i * GRID_COLS + j
-      pos.set(i * CELL_SIZE, j * CELL_SIZE, 0)
-      mat4.identity().setPosition(pos)
-      mesh.setMatrixAt(idx, mat4)
-      aUvArray[idx * 2] = GRID_ROWS > 1 ? i / (GRID_ROWS - 1) : 0.5
-      aUvArray[idx * 2 + 1] = GRID_COLS > 1 ? j / (GRID_COLS - 1) : 0.5
+  function buildGrid() {
+    gridCols = clampGridCols(gridCols)
+    gridRows = Math.max(1, Math.round(gridCols * IMAGE_ASPECT))
+    meshNativeH = gridCols * cellSize
+    meshNativeW = gridRows * cellSize
+
+    const count = gridRows * gridCols
+
+    if (instancedMesh) {
+      group.remove(instancedMesh)
+      instancedMesh.geometry.dispose()
+      instancedMesh = null
     }
+
+    const geometry = new THREE.PlaneGeometry(cellSize, cellSize, 1, 1)
+    const aUvArray = new Float32Array(count * 2)
+    instancedMesh = new THREE.InstancedMesh(geometry, material, count)
+
+    for (let i = 0; i < gridRows; i++) {
+      for (let j = 0; j < gridCols; j++) {
+        const idx = i * gridCols + j
+        pos.set(i * cellSize, j * cellSize, 0)
+        mat4.identity().setPosition(pos)
+        instancedMesh.setMatrixAt(idx, mat4)
+        aUvArray[idx * 2] = gridRows > 1 ? i / (gridRows - 1) : 0.5
+        aUvArray[idx * 2 + 1] = gridCols > 1 ? j / (gridCols - 1) : 0.5
+      }
+    }
+
+    geometry.setAttribute('aUv', new THREE.InstancedBufferAttribute(aUvArray, 2))
+    instancedMesh.instanceMatrix.needsUpdate = true
+
+    instancedMesh.position.set(-meshNativeW / 2, -meshNativeH / 2, 0)
+    group.add(instancedMesh)
   }
 
-  geometry.setAttribute('aUv', new THREE.InstancedBufferAttribute(aUvArray, 2))
-  mesh.instanceMatrix.needsUpdate = true
+  buildGrid()
 
-  const group = new THREE.Group()
-  mesh.position.set(-MESH_NATIVE_W / 2, -MESH_NATIVE_H / 2, 0)
-  group.add(mesh)
-  scene.add(group)
+  /** Matched to {@link ASCII_FONT_PRESETS} labels for Inspector ValueSelect. */
+  let fontPreset = initialPreset
+  let currentAsciiTexture = asciiAtlas
+
+  async function rebuildAsciiAtlas(presetId) {
+    const preset = getPresetById(presetId)
+    try {
+      await document.fonts.load(preset.fontCss)
+    } catch (err) {
+      console.warn('ASCII atlas: font load failed, keeping previous atlas', err)
+      return
+    }
+
+    const created = createASCIITexture(ASCII_CHARSET, { fontCss: preset.fontCss })
+    currentAsciiTexture.dispose()
+    currentAsciiTexture = created.texture
+    asciiAtlasNode.value = currentAsciiTexture
+    charCountUniform.value = created.charCount
+    currentAsciiTexture.needsUpdate = true
+    material.needsUpdate = true
+  }
+
+  const inspector = new Inspector()
+  renderer.inspector = inspector
+
+  const asciiLayoutApi = {
+    get fontPresetLabel() {
+      return fontPreset.label
+    },
+    set fontPresetLabel(label) {
+      const next = ASCII_FONT_PRESETS.find((p) => p.label === label)
+      if (!next) return
+      fontPreset = next
+      void rebuildAsciiAtlas(next.id)
+    },
+
+    get gridCols() {
+      return gridCols
+    },
+    set gridCols(v) {
+      gridCols = clampGridCols(v)
+      buildGrid()
+    },
+
+    get cellSize() {
+      return cellSize
+    },
+    set cellSize(v) {
+      cellSize = Math.max(0.01, Number(v))
+      buildGrid()
+    },
+
+    luminanceExponentUniform,
+    useTextureColorUniform,
+    showOriginalImageUniform,
+    glyphLuminanceJitterUniform,
+    glyphTimeOscillationUniform,
+    oscTimeScaleUniform,
+  }
+
+  setupAsciiLayoutInspector(inspector, asciiLayoutApi)
 
   /** Independent render clock: TSL `time` advances even when layout RAF is idle. */
   function startRenderLoop() {
@@ -102,14 +222,12 @@ export async function initAsciiRenderer(canvas) {
 
   return {
     sync(rect, angle) {
-      // Same height-driven uniform scale as layout pearlRect (672:1024); camera uses renderer logical size so cells stay square with DPR.
-      const scale = rect.height / MESH_NATIVE_H
+      const scale = rect.height / meshNativeH
       const cx = rect.x + rect.width / 2
       const cyDom = rect.y + rect.height / 2
       const cyWorld = viewHeight - cyDom
       group.position.set(cx, cyWorld, 0)
       group.scale.set(scale, scale, 1)
-      // CSS rotate() is clockwise for positive angles; Three.js rotation.z is CCW in XY — negate to match SVG + pretext hull.
       group.rotation.z = -angle
     },
 
@@ -124,10 +242,12 @@ export async function initAsciiRenderer(canvas) {
     dispose() {
       renderer.setAnimationLoop(null)
       renderer.dispose()
-      geometry.dispose()
+      if (instancedMesh) {
+        instancedMesh.geometry.dispose()
+      }
       material.dispose()
       imageTexture.dispose()
-      asciiAtlas.dispose()
+      currentAsciiTexture.dispose()
     },
   }
 }

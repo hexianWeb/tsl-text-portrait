@@ -18,6 +18,7 @@ import {
   remapClamp,
   time,
   oscSine,
+  uniformTexture,
 } from 'three/tsl'
 
 /**
@@ -48,6 +49,8 @@ export function createInstancedGridMaterial(map, asciiAtlas, charCount) {
   const oscTimeScaleUniform = uniform(0.3)
 
   const charCountUniform = uniform(charCount)
+  /** Swappable atlas; update `.value` when regenerating `createASCIITexture`. */
+  const asciiAtlasNode = uniformTexture(asciiAtlas)
 
   const asciiCodeStyle = Fn(() => {
     const aUv = attribute('aUv', 'vec2')
@@ -76,7 +79,7 @@ export function createInstancedGridMaterial(map, asciiAtlas, charCount) {
     const glyphIdx = floor(lForGlyph.mul(maxIdx))
     const uAtlas = glyphIdx.add(cellUv.x).div(charCountUniform)
     const vAtlas = cellUv.y
-    const asciiSample = texture(asciiAtlas, vec2(uAtlas, vAtlas))
+    const asciiSample = texture(asciiAtlasNode, vec2(uAtlas, vAtlas))
     const shaded = asciiSample.rgb.mul(tint)
     const finalRgb = mix(shaded, texColor.rgb, showOriginalImageUniform)
 
@@ -87,6 +90,8 @@ export function createInstancedGridMaterial(map, asciiAtlas, charCount) {
 
   return {
     material,
+    asciiAtlasNode,
+    charCountUniform,
     luminanceExponentUniform,
     useTextureColorUniform,
     showOriginalImageUniform,

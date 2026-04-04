@@ -10,14 +10,18 @@ export const ASCII_CHARSET =
 
 const CELL_PX = 64
 
+const DEFAULT_FONT_CSS = 'bold 60px "UnifrakturCook", cursive'
+
 /**
  * Rasterize each character into a single horizontal strip (black background, white glyphs).
  * Do not append the canvas to the DOM — only upload to GPU via CanvasTexture.
  *
  * @param {string} [charset] - defaults to {@link ASCII_CHARSET}
+ * @param {{ fontCss?: string }} [options]
  * @returns {{ texture: THREE.CanvasTexture, charCount: number }}
  */
-export function createASCIITexture(charset = ASCII_CHARSET) {
+export function createASCIITexture(charset = ASCII_CHARSET, options = {}) {
+  const fontCss = options.fontCss ?? DEFAULT_FONT_CSS
   const n = charset.length
   const canvas = document.createElement('canvas')
   canvas.width = n * CELL_PX
@@ -31,7 +35,7 @@ export function createASCIITexture(charset = ASCII_CHARSET) {
   ctx.fillStyle = '#000000'
   ctx.fillRect(0, 0, canvas.width, canvas.height)
   ctx.fillStyle = '#ffffff'
-  ctx.font = 'bold 60px UnifrakturCook, cursive'
+  ctx.font = fontCss
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
 

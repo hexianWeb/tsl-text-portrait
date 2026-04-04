@@ -1,3 +1,5 @@
+import { ASCII_FONT_PRESETS } from '../render/ascii-font-presets.js'
+
 /**
  * Inspector: luminance exponent, color/source toggles, glyph jitter and time animation.
  *
@@ -65,4 +67,30 @@ export function setupInspector(inspector, {
   group.add(ui, 'glyphLuminanceJitter', 0, 0.5, 0.005)
   group.add(ui, 'glyphTimeOscillation', 0, 0.35, 0.005)
   group.add(ui, 'oscTimeScale', 0.05, 6, 0.05)
+}
+
+/**
+ * Layout ASCII demo: font preset, grid resolution, and instanced-grid uniforms.
+ *
+ * @param {import('three/addons/inspector/Inspector.js').Inspector} inspector
+ * @param {object} api
+ */
+export function setupAsciiLayoutInspector(inspector, api) {
+  const presetLabels = ASCII_FONT_PRESETS.map((p) => p.label)
+
+  const atlasGroup = inspector.createParameters('ASCII atlas')
+  atlasGroup.add(api, 'fontPresetLabel', presetLabels)
+
+  const gridGroup = inspector.createParameters('Grid')
+  gridGroup.add(api, 'gridCols', 8, 512, 1)
+  gridGroup.add(api, 'cellSize', 0.02, 0.5, 0.005)
+
+  setupInspector(inspector, {
+    luminanceExponentUniform: api.luminanceExponentUniform,
+    useTextureColorUniform: api.useTextureColorUniform,
+    showOriginalImageUniform: api.showOriginalImageUniform,
+    glyphLuminanceJitterUniform: api.glyphLuminanceJitterUniform,
+    glyphTimeOscillationUniform: api.glyphTimeOscillationUniform,
+    oscTimeScaleUniform: api.oscTimeScaleUniform,
+  })
 }
