@@ -45,7 +45,7 @@ export async function initAsciiRenderer(canvas) {
 
   await renderer.init()
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-  renderer.setClearColor('#000000', 1)
+  renderer.setClearColor('#000000', 0)
 
   const scene = new THREE.Scene()
 
