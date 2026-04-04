@@ -19,8 +19,8 @@ Pearl Maiden showcase — demonstrates layout APIs:
 - There is no DOM text measurement loop feeding layout.
 */
 import { layoutNextLine, prepareWithSegments, walkLineRanges } from '@chenglou/pretext'
-import { BODY_COPY } from './layout-text.js'
-import pearlMaidenArtUrl from '../assets/symbol2.svg'
+import { BODY_COPY, CREDIT_TEXT, HEADLINE_TEXT } from './layout-text.js'
+import pearlMaidenArtUrl from '../assets/occupy.svg'
 import {
   carveTextLineSlots,
   getPolygonIntervalForBand,
@@ -30,37 +30,31 @@ import {
   transformWrapPoints,
 } from './wrap-geometry.js'
 import { initAsciiRenderer } from '../render/ascii-renderer.js'
-
-const BODY_FONT = '16px "IM Fell English", serif'
-const BODY_LINE_HEIGHT = 28
-const CREDIT_TEXT = 'Classical portrait · Curatorial note'
-const CREDIT_FONT = 'italic 12px "EB Garamond", serif'
-const CREDIT_LINE_HEIGHT = 16
-/** Uppercase so pretext metrics match rendered glyphs (IM Fell English SC). */
-const HEADLINE_TEXT = 'GIRL WITH A PEARL EARRING'
-const HEADLINE_FONT_FAMILY = '"IM Fell English SC", serif'
-const HINT_PILL_SAFE_TOP = 36
-const NARROW_BREAKPOINT = 380
-const NARROW_COLUMN_MAX_WIDTH = 430
-/** Fraction of viewport width reserved on each side; text + hero live in the middle band. */
-const LAYOUT_SIDE_INSET = 0.10
-
-/** Matches SVG viewBox and source image (672×1024). */
-const IMAGE_ASPECT = 672 / 1024
+import {
+  BODY_FONT,
+  BODY_LINE_HEIGHT,
+  CREDIT_FONT,
+  CREDIT_LINE_HEIGHT,
+  HEADLINE_FONT_FAMILY,
+  HINT_PILL_SAFE_TOP,
+  IMAGE_ASPECT,
+  LAYOUT_SIDE_INSET,
+  LOGO_DRAG_CLICK_THRESHOLD_PX,
+  NARROW_BREAKPOINT,
+  NARROW_COLUMN_MAX_WIDTH,
+  PEARL_SCALE_SMOOTH_LAMBDA,
+  PEARL_USER_SCALE_MAX,
+  PEARL_USER_SCALE_MIN,
+} from './config.js'
 
 /** Extra scale on top of responsive `pearlRect` (wheel while hovering the illustration). */
 let pearlUserScale = 1
 /** Wheel sets this; `pearlUserScale` eases toward it (see `updatePearlScaleSmooth`). */
 let pearlScaleTarget = 1
 let scaleSmoothLastTime = null
-/** Higher = snappier zoom ease (exponential decay toward target). */
-const PEARL_SCALE_SMOOTH_LAMBDA = 14
-const PEARL_USER_SCALE_MIN = 0.5
-const PEARL_USER_SCALE_MAX = 2
 
 /** Pixel offset from the auto layout position (pointer drag). */
 let pearlDragOffset = { x: 0, y: 0 }
-const LOGO_DRAG_CLICK_THRESHOLD_PX = 8
 
 let pearlDragSession = null
 
