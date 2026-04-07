@@ -1,34 +1,75 @@
-# Three.js TSL template
+# Three.js TSL + WebGPU — ASCII portrait template
 
-A minimalist template to start practicing and learning TSL, the Three.js Shading Language
+Starter template for learning **Three.js Shading Language (TSL)** on **WebGPU**: a classical portrait rendered as a **colorful character grid** (luminance-mapped glyphs), plus a **curatorial article layout** in the page chrome. The demo scene showcases instanced text, shader uniforms, and interactive viewport controls.
 
----
+## Preview
 
-# Learn TSL
+<img src="src/UI/page.png" width="960" alt="Web page with curatorial text on the left and a Girl with a Pearl Earring portrait rendered as ASCII-style character mosaic on the right" />
 
-## Useful links
+*Screenshot: gallery-style typography + GPU text-grid illustration.*
 
-- [Official announcement and introduction](https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language)
-- [Q&A](https://github.com/boytchev/tsl-textures/wiki/Q&A)
-- [Three.js WebGPU examples](https://threejs.org/examples/?q=webgpu#webgpu_parallax_uv)
-- [List of nodes](https://github.com/mrdoob/three.js/blob/423f285d5d868dd128d6f143dc8ec31154018f57/src/nodes/Nodes.js#L42)
-- [TSL => WGSL / GLSL](https://threejs.org/examples/?q=webgpu#webgpu_tsl_editor)
-- [GLSL => TSL](https://threejs.org/examples/?q=webgpu#webgpu_tsl_transpiler)
-- [TSL textures](https://github.com/boytchev/tsl-textures) ([demos](https://boytchev.github.io/tsl-textures/))
+## Features
 
----
+- **WebGPU + TSL** — Node materials and WGSL-oriented workflow via Three.js TSL.
+- **ASCII / glyph mosaic** — Dense instanced characters; brightness follows image luminance; inspector toggles for color source, jitter, and animation (when debug UI is enabled).
+- **Layout engine** — Article flow, wrapping, and stage composition for long-form text next to the WebGL canvas.
+- **Interactive illustration** — Drag to pan, wheel to zoom, short press to rotate the portrait plane.
+- **Debug** — `D` toggles a semi-transparent alignment overlay; append `#debug` to the URL for the Three.js Inspector panel (parameters depend on build).
 
-## Setup
-Download [Node.js](https://nodejs.org/en/download/).
-Run this followed commands:
+## Controls
 
-``` bash
-# Install dependencies (only the first time)
+| Action | Input |
+| --- | --- |
+| Move illustration | Drag |
+| Scale | Mouse wheel |
+| Rotate | Short press / tap (see on-screen hint) |
+| Debug overlay (alignment) | `D` |
+| Shader inspector (optional) | Open URL with hash `#debug` |
+
+On-screen copy matches `src/index.html` (hint pill at the top).
+
+## Requirements
+
+- [Node.js](https://nodejs.org/) (LTS recommended)
+- A browser with **WebGPU** support (e.g. recent Chrome / Edge).
+
+## Getting started
+
+```bash
 npm install
-
-# Run the local server at localhost:8080
 npm run dev
+```
 
-# Build for production in the dist/ directory
+The dev server uses Vite with `host: true` (see `vite.config.js`); use the URL printed in the terminal (typically `http://localhost:5173/`).
+
+### Build
+
+```bash
 npm run build
 ```
+
+Output goes to `dist/` at the repository root.
+
+## Project structure (high level)
+
+| Path | Role |
+| --- | --- |
+| `src/app/` | Entry, frame loop, GUI / inspector wiring |
+| `src/render/` | ASCII renderer, materials, font presets, textures |
+| `src/layout/` | Layout engine, text wrap, geometry helpers |
+| `src/index.html` / `src/style.css` | Page shell and styles |
+| `static/` | Static assets (served via Vite `publicDir`) |
+| `docs/plans/` | Design notes for features and layout |
+
+## Learn TSL
+
+- [TSL introduction (wiki)](https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language)
+- [TSL Q&A (tsl-textures)](https://github.com/boytchev/tsl-textures/wiki/Q&A)
+- [WebGPU examples](https://threejs.org/examples/?q=webgpu#webgpu_parallax_uv)
+- [Node list (source)](https://github.com/mrdoob/three.js/blob/dev/src/nodes/Nodes.js)
+- [TSL editor example](https://threejs.org/examples/?q=webgpu#webgpu_tsl_editor) · [GLSL → TSL transpiler](https://threejs.org/examples/?q=webgpu#webgpu_tsl_transpiler)
+- [tsl-textures](https://github.com/boytchev/tsl-textures) ([demos](https://boytchev.github.io/tsl-textures/))
+
+## Repository branding
+
+Suggested GitHub name and “About” text for a **technical** audience are documented in [`docs/plans/2026-04-07-github-repo-branding-design.md`](docs/plans/2026-04-07-github-repo-branding-design.md).
