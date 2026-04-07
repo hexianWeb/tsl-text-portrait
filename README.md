@@ -18,6 +18,10 @@ Starter template for learning **Three.js Shading Language (TSL)** on **WebGPU**:
 - **Interactive illustration** — Drag to pan, wheel to zoom, short press to rotate the portrait plane.
 - **Debug** — `D` toggles a semi-transparent alignment overlay; append `#debug` to the URL for the Three.js Inspector panel (parameters depend on build).
 
+## Pretext (`@chenglou/pretext`)
+
+The page copy is laid out with **[Pretext](https://www.npmjs.com/package/@chenglou/pretext)** — a small library for **browser-side typographic preparation**. The layout engine imports `prepareWithSegments`, `layoutNextLine`, and `walkLineRanges` so headline, body, and credit lines are broken into measured segments and flowed into **two columns** that **wrap around** the portrait obstacle (SVG hull), instead of driving layout from ad-hoc DOM `getBoundingClientRect` loops. When the illustration is dragged, scaled, or rotated, text **reflows** against the updated wrap geometry while staying in sync with the same strings used for rendering.
+
 ## Controls
 
 | Action | Input |

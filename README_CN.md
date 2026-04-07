@@ -18,6 +18,10 @@
 - **可交互插图** — 拖拽平移、滚轮缩放、短按旋转肖像平面。
 - **调试** — `D` 切换半透明对齐叠层；在 URL 加上 `#debug` 可打开 Three.js Inspector 面板（具体参数随构建而定）。
 
+## Pretext（`@chenglou/pretext`）
+
+正文与标题排版使用 **[Pretext](https://www.npmjs.com/package/@chenglou/pretext)**：面向浏览器的**文字量测与断行**库。`layout-engine` 通过 `prepareWithSegments`、`layoutNextLine`、`walkLineRanges` 将主标题、长正文与署名等拆成已量测片段，再流入**双栏**并沿肖像障碍（SVG 包络）**绕排**，而不是用零散的 DOM `getBoundingClientRect` 循环驱动布局。插图被拖拽、缩放或旋转时，文字会随更新后的绕排几何**重排**，并与用于渲染的同一套字符串保持一致。
+
 ## 操作
 
 | 操作 | 输入 |
