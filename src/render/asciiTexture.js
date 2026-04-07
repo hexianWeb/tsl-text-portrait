@@ -12,23 +12,17 @@ const CELL_PX = 64
 
 const DEFAULT_FONT_CSS = 'bold 60px "UnifrakturCook", cursive'
 
-/** White halo strength for the middle third of the charset (0 = off). */
-const DEFAULT_GLOW_SHADOW_BLUR = 8
-
 /**
  * Rasterize each character into a single horizontal strip (black background, white glyphs).
  * Do not append the canvas to the DOM — only upload to GPU via CanvasTexture.
  *
  * @param {string} [charset] - defaults to {@link ASCII_CHARSET}
- * @param {{ fontCss?: string, glowShadowBlur?: number }} [options] - `glowShadowBlur` defaults to 8; set to 0 to disable glow on the middle third.
+ * @param {{ fontCss?: string }} [options]
  * @returns {{ texture: THREE.CanvasTexture, charCount: number }}
  */
 export function createASCIITexture(charset = ASCII_CHARSET, options = {}) {
   const fontCss = options.fontCss ?? DEFAULT_FONT_CSS
-  const glowShadowBlur = options.glowShadowBlur ?? DEFAULT_GLOW_SHADOW_BLUR
   const n = charset.length
-  const glowStart = Math.floor(n / 3)
-  const glowEnd = Math.floor((2 * n) / 3)
   const canvas = document.createElement('canvas')
   canvas.width = n * CELL_PX
   canvas.height = CELL_PX
@@ -48,26 +42,7 @@ export function createASCIITexture(charset = ASCII_CHARSET, options = {}) {
   for (let i = 0; i < n; i++) {
     const cx = i * CELL_PX + CELL_PX / 2
     const cy = CELL_PX / 2
-    const useGlow = glowShadowBlur > 0 && i >= glowStart && i < glowEnd
-
-    if (useGlow) {
-      // Clip so blur does not bleed into neighboring atlas cells.
-      ctx.save()
-      ctx.beginPath()
-      ctx.rect(i * CELL_PX, 0, CELL_PX, CELL_PX)
-      ctx.clip()
-      ctx.shadowColor = '#ffffff'
-      ctx.shadowBlur = glowShadowBlur
-      ctx.shadowOffsetX = 0
-      ctx.shadowOffsetY = 0
-      ctx.fillText(charset[i], cx, cy)
-      ctx.shadowBlur = 0
-      ctx.shadowColor = 'rgba(0,0,0,0)'
-      ctx.fillText(charset[i], cx, cy)
-      ctx.restore()
-    } else {
-      ctx.fillText(charset[i], cx, cy)
-    }
+    ctx.fillText(charset[i], cx, cy)
   }
 
   const texture = new THREE.CanvasTexture(canvas)

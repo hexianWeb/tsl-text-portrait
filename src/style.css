@@ -54,6 +54,7 @@ body {
   isolation: isolate;
   background: transparent;
   z-index: 1;
+
 }
 
 /* Right-faded diagonal cross grid (canvas shows through; no pointer capture) */

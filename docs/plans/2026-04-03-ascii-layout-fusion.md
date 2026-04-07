@@ -27,10 +27,10 @@ src/
 ├── style.css           ← Rewrite: dark theme + layout element styles
 ├── font.ttf            ← Unchanged
 ├── image.png           ← 672×1024 Pearl Maiden photo
-├── symbol2.svg         ← Moved from dynamic-layout/
+├── occupy.svg         ← Moved from dynamic-layout/
 ```
 
-After all tasks complete, delete `src/dynamic-layout/` directory and unused files (`main.js`, `gui.js`, `loop.js`, `image3.png`).
+After all tasks complete, delete `src/dynamic-layout/` directory and unused files (`main.js`, `gui.js`, `loop.js`, `image.png`).
 
 ---
 
@@ -53,7 +53,7 @@ const MESH_NATIVE_H = GRID_COLS * CELL_SIZE  // = 19.2
 - Create: `src/wrap-geometry.js` (from `src/dynamic-layout/wrap-geometry.ts`)
 - Create: `src/layout-text.js` (from `src/dynamic-layout/dynamic-layout-text.ts`)
 - Create: `src/layout-engine.js` (from `src/dynamic-layout/dynamic-layout.ts`)
-- Move: `src/dynamic-layout/symbol2.svg` → `src/symbol2.svg`
+- Move: `src/dynamic-layout/occupy.svg` → `src/occupy.svg`
 
 ### TS → JS conversion rules (apply to all three files):
 
@@ -114,12 +114,12 @@ Key changes besides type stripping:
 ```javascript
 // Before:
 // import { BODY_COPY } from './dynamic-layout-text.ts'
-// import pearlMaidenArtUrl from './symbol2.svg'
+// import pearlMaidenArtUrl from './occupy.svg'
 // import { carveTextLineSlots, ... } from './wrap-geometry.ts'
 
 // After:
 import { BODY_COPY } from './layout-text.js'
-import pearlMaidenArtUrl from './symbol2.svg'
+import pearlMaidenArtUrl from './occupy.svg'
 import { carveTextLineSlots, getPolygonIntervalForBand, getRectIntervalsForBand, getWrapHull, isPointInPolygon, transformWrapPoints } from './wrap-geometry.js'
 ```
 
@@ -155,9 +155,9 @@ let pearlDragSession = null
 
 **Remove `!` non-null assertions everywhere** — there are ~40+ instances. Search for `!.` and `]!` patterns.
 
-### Step 4: Move `symbol2.svg`
+### Step 4: Move `occupy.svg`
 
-Copy `src/dynamic-layout/symbol2.svg` to `src/symbol2.svg`.
+Copy `src/dynamic-layout/occupy.svg` to `src/occupy.svg`.
 
 ### Step 5: Verify conversion compiles
 
@@ -168,7 +168,7 @@ Expected: No import or syntax errors. (The page won't work yet — HTML hasn't b
 ### Step 6: Commit
 
 ```bash
-git add src/wrap-geometry.js src/layout-text.js src/layout-engine.js src/symbol2.svg
+git add src/wrap-geometry.js src/layout-text.js src/layout-engine.js src/occupy.svg
 git commit -m "refactor: convert dynamic-layout TS to JS and move to src/"
 ```
 

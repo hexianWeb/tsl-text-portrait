@@ -17,7 +17,7 @@
 **Files:**
 
 - Move: `src/image.png` → `src/assets/image.png`
-- Move: `src/symbol2.svg` → `src/assets/symbol2.svg`
+- Move: `src/occupy.svg` → `src/assets/occupy.svg`
 - Modify: `src/ascii-renderer.js`（搬進 `render/` 前先改路徑，避免中途壞 build）
 - Modify: `src/layout-engine.js`（同上）
 
@@ -32,7 +32,7 @@ import imageUrl from './assets/image.png'
 **Step 3: 更新仍在根目錄的 `src/layout-engine.js`**
 
 ```javascript
-import pearlMaidenArtUrl from './assets/symbol2.svg'
+import pearlMaidenArtUrl from './assets/occupy.svg'
 ```
 
 （此時 `ascii-renderer` 仍指向 `./asciiTexture.js` 等，勿改。）
@@ -74,7 +74,7 @@ import imageUrl from '../assets/image.png'
 **Step 1: 更新 `src/layout/layout-engine.js` 頂部 import**
 
 - `layout-text`：`./layout-text.js`（不變）
-- SVG：`import pearlMaidenArtUrl from '../assets/symbol2.svg'`
+- SVG：`import pearlMaidenArtUrl from '../assets/occupy.svg'`
 - `wrap-geometry`：`./wrap-geometry.js`（不變）
 - `ascii-renderer`：`import { initAsciiRenderer } from '../render/ascii-renderer.js'`
 

@@ -25,7 +25,7 @@
 | `app/` | `script.js`, `main.js`, `gui.js`, `loop.js` | 啟動腳本、可選次要入口、Inspector UI、動畫迴圈 |
 | `layout/` | `layout-engine.js`, `layout-text.js`, `wrap-geometry.js` | 排版、文案資料、幾何輔助 |
 | `render/` | `ascii-renderer.js`, `asciiTexture.js`, `material.js` | WebGPU / TSL 渲染與材質 |
-| `assets/` | `image.png`, `symbol2.svg` | 由 JS `import` 的媒體資源 |
+| `assets/` | `image.png`, `occupy.svg` | 由 JS `import` 的媒體資源 |
 
 ## 約定
 
