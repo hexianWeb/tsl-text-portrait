@@ -82,15 +82,19 @@ export function setupInspector(
  *
  * @param {import('three/addons/inspector/Inspector.js').Inspector} inspector
  * @param {object} api
+ * @param {{ includeGridCols?: boolean }} [options] - Pearl scale drives column count; set false to hide slider.
  */
-export function setupAsciiLayoutInspector(inspector, api) {
+export function setupAsciiLayoutInspector(inspector, api, options = {}) {
+  const { includeGridCols = true } = options
   const presetLabels = ASCII_FONT_PRESETS.map((p) => p.label)
 
   const atlasGroup = inspector.createParameters('ASCII atlas')
   atlasGroup.add(api, 'fontPresetLabel', presetLabels)
 
   const gridGroup = inspector.createParameters('Grid')
-  gridGroup.add(api, 'gridCols', 2, 192, 1)
+  if (includeGridCols) {
+    gridGroup.add(api, 'gridCols', 2, 192, 1)
+  }
   gridGroup.add(api, 'cellSize', 0.02, 0.5, 0.005)
 
   setupInspector(

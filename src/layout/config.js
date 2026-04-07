@@ -69,6 +69,26 @@ export function mapPearlScaleToLuminanceExponent(scale) {
 }
 
 /**
+ * ASCII grid column count range when driven by pearl wheel scale.
+ * Larger scale → more columns (finer ASCII sampling). See {@link mapPearlScaleToGridCols}.
+ */
+export const PEARL_GRID_COLS_MIN = 64
+export const PEARL_GRID_COLS_MAX = 192
+
+/**
+ * Linear map: pearl scale [min,max] → grid column count [min,max], rounded.
+ * Rebuild the instanced grid only when this integer changes (see ascii-renderer `sync`).
+ * @param {number} scale - Smoothed `pearlUserScale`.
+ */
+export function mapPearlScaleToGridCols(scale) {
+  const lo = PEARL_USER_SCALE_MIN
+  const hi = PEARL_USER_SCALE_MAX
+  const t = Math.min(1, Math.max(0, (scale - lo) / (hi - lo)))
+  const f = PEARL_GRID_COLS_MIN + t * (PEARL_GRID_COLS_MAX - PEARL_GRID_COLS_MIN)
+  return Math.round(f)
+}
+
+/**
  * 拖曳插圖時，移動超過此像素數才視為拖曳；否則放開可當作「點擊旋轉」。
  */
 export const LOGO_DRAG_CLICK_THRESHOLD_PX = 8

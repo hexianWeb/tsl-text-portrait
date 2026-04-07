@@ -5,6 +5,10 @@ import { createASCIITexture, ASCII_CHARSET } from './asciiTexture.js'
 import { createInstancedGridMaterial } from './material.js'
 import { getPresetById, ASCII_FONT_PRESETS } from './ascii-font-presets.js'
 import { setupAsciiLayoutInspector } from '../app/gui.js'
+import {
+  mapPearlScaleToGridCols,
+  mapPearlScaleToLuminanceExponent,
+} from '../layout/config.js'
 import imageUrl from '../assets/image.png'
 
 const IMAGE_ASPECT = 672 / 1024
@@ -109,7 +113,8 @@ export async function initAsciiRenderer(canvas) {
   const group = new THREE.Group()
   scene.add(group)
 
-  let gridCols = 192
+  /** Driven by pearl wheel scale via {@link mapPearlScaleToGridCols}; rebuild only when rounded value changes. */
+  let gridCols = mapPearlScaleToGridCols(1)
   let cellSize = 0.1
   let gridRows = Math.max(1, Math.round(gridCols * IMAGE_ASPECT))
   let meshNativeH = gridCols * cellSize
@@ -215,7 +220,7 @@ export async function initAsciiRenderer(canvas) {
     oscTimeScaleUniform,
   }
 
-  setupAsciiLayoutInspector(inspector, asciiLayoutApi)
+  setupAsciiLayoutInspector(inspector, asciiLayoutApi, { includeGridCols: false })
 
   /** Independent render clock: TSL `time` advances even when layout RAF is idle. */
   function startRenderLoop() {
@@ -228,11 +233,16 @@ export async function initAsciiRenderer(canvas) {
     /**
      * @param {{ x: number, y: number, width: number, height: number }} rect
      * @param {number} angle
-     * @param {number} [luminanceExponent] - If set, updates `luminanceExponentUniform` (e.g. from pearl wheel scale).
+     * @param {number} [pearlUserScale] - If set, drives luminance exponent and grid column count from layout config mappers.
      */
-    sync(rect, angle, luminanceExponent) {
-      if (luminanceExponent !== undefined) {
-        luminanceExponentUniform.value = luminanceExponent
+    sync(rect, angle, pearlUserScale) {
+      if (pearlUserScale !== undefined) {
+        luminanceExponentUniform.value = mapPearlScaleToLuminanceExponent(pearlUserScale)
+        const nextCols = mapPearlScaleToGridCols(pearlUserScale)
+        if (nextCols !== gridCols) {
+          gridCols = nextCols
+          buildGrid()
+        }
       }
       const scale = rect.height / meshNativeH
       const cx = rect.x + rect.width / 2

@@ -45,7 +45,6 @@ import {
   PEARL_SCALE_SMOOTH_LAMBDA,
   PEARL_USER_SCALE_MAX,
   PEARL_USER_SCALE_MIN,
-  mapPearlScaleToLuminanceExponent,
 } from './config.js'
 
 /** Extra scale on top of responsive `pearlRect` (wheel while hovering the illustration). */
@@ -821,11 +820,7 @@ function commitFrame(now) {
   document.body.style.cursor =
     pearlDragSession !== null ? 'grabbing' : hoveredLogo === null ? '' : 'pointer'
 
-  asciiRenderer.sync(
-    layout.pearlRect,
-    logoAnimations.pearl.angle,
-    mapPearlScaleToLuminanceExponent(pearlUserScale),
-  )
+  asciiRenderer.sync(layout.pearlRect, logoAnimations.pearl.angle, pearlUserScale)
 
   return animating
 }
