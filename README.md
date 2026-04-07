@@ -1,5 +1,7 @@
 # Three.js TSL + WebGPU — ASCII portrait template
 
+English | [简体中文](README_CN.md)
+
 Starter template for learning **Three.js Shading Language (TSL)** on **WebGPU**: a classical portrait rendered as a **colorful character grid** (luminance-mapped glyphs), plus a **curatorial article layout** in the page chrome. The demo scene showcases instanced text, shader uniforms, and interactive viewport controls.
 
 ## Preview
