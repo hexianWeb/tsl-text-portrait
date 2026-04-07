@@ -4,6 +4,7 @@ import { Inspector } from 'three/addons/inspector/Inspector.js'
 import { pass, renderOutput } from 'three/tsl'
 import * as THREE from 'three/webgpu'
 import { setupInspector } from './gui.js'
+import { isInspectorDebugEnabled } from './inspector-debug.js'
 import { startLoop } from './loop.js'
 import { createASCIITexture } from '../render/asciiTexture.js'
 import { createInstancedGridMaterial } from '../render/material.js'
@@ -30,8 +31,8 @@ async function init() {
     canvas,
     forceWebGL: false,
   })
-  const inspector = new Inspector()
-  renderer.inspector = inspector
+  const inspector = isInspectorDebugEnabled() ? new Inspector() : null
+  if (inspector) renderer.inspector = inspector
 
   await renderer.init()
   renderer.setSize(sizes.width, sizes.height)
@@ -105,14 +106,16 @@ async function init() {
   instancedMesh.position.set(-halfWidth, -halfHeight, 0)
   scene.add(instancedMesh)
 
-  setupInspector(inspector, {
-    luminanceExponentUniform,
-    useTextureColorUniform,
-    showOriginalImageUniform,
-    glyphLuminanceJitterUniform,
-    glyphTimeOscillationUniform,
-    oscTimeScaleUniform,
-  })
+  if (inspector) {
+    setupInspector(inspector, {
+      luminanceExponentUniform,
+      useTextureColorUniform,
+      showOriginalImageUniform,
+      glyphLuminanceJitterUniform,
+      glyphTimeOscillationUniform,
+      oscTimeScaleUniform,
+    })
+  }
   startLoop({ renderer, postProcessing, controls })
 
   window.addEventListener('resize', () => {

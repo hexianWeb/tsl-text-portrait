@@ -5,6 +5,7 @@ import { createASCIITexture, ASCII_CHARSET } from './asciiTexture.js'
 import { createInstancedGridMaterial } from './material.js'
 import { getPresetById, ASCII_FONT_PRESETS } from './ascii-font-presets.js'
 import { setupAsciiLayoutInspector } from '../app/gui.js'
+import { isInspectorDebugEnabled } from '../app/inspector-debug.js'
 import {
   mapPearlScaleToGridCols,
   mapPearlScaleToLuminanceExponent,
@@ -43,9 +44,9 @@ function clampGridCols(cols) {
  */
 export async function initAsciiRenderer(canvas) {
   const renderer = new THREE.WebGPURenderer({ canvas, forceWebGL: false })
-  // Must assign before `init()` so `Renderer` calls `Inspector.init()`, which appends the profiler UI to `canvas.parentElement`.
-  const inspector = new Inspector()
-  renderer.inspector = inspector
+  // When `#debug` is in the URL, assign before `init()` so `Renderer` calls `Inspector.init()` (profiler UI on `canvas.parentElement`).
+  const inspector = isInspectorDebugEnabled() ? new Inspector() : null
+  if (inspector) renderer.inspector = inspector
 
   await renderer.init()
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -220,7 +221,9 @@ export async function initAsciiRenderer(canvas) {
     oscTimeScaleUniform,
   }
 
-  setupAsciiLayoutInspector(inspector, asciiLayoutApi, { includeGridCols: false })
+  if (inspector) {
+    setupAsciiLayoutInspector(inspector, asciiLayoutApi, { includeGridCols: false })
+  }
 
   /** Independent render clock: TSL `time` advances even when layout RAF is idle. */
   function startRenderLoop() {
