@@ -6,7 +6,7 @@
 
 ## 预览
 
-<img src="src/UI/page.png" width="960" alt="页面左侧为策展长文，右侧为戴珍珠耳环的少女 ASCII 风格字符马赛克肖像" />
+![](https://cdn.jsdelivr.net/gh/hexianWeb/markdown_pic@main/img/page.png)
 
 *截图：画廊风排版 + GPU 字符栅格画面。*
 

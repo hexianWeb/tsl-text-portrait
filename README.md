@@ -6,7 +6,7 @@ Starter template for learning **Three.js Shading Language (TSL)** on **WebGPU**:
 
 ## Preview
 
-<img src="src/UI/page.png" width="960" alt="Web page with curatorial text on the left and a Girl with a Pearl Earring portrait rendered as ASCII-style character mosaic on the right" />
+![](https://cdn.jsdelivr.net/gh/hexianWeb/markdown_pic@main/img/page.png)
 
 *Screenshot: gallery-style typography + GPU text-grid illustration.*
 
